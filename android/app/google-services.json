@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "757356171935",
+    "project_id": "bookxchange-4ff59",
+    "storage_bucket": "bookxchange-4ff59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757356171935:android:c9dac97f36d59908f508aa",
+        "android_client_info": {
+          "package_name": "com.baimamba.bloctest.cubit_test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxgDz_YJKmJfS_4_V8j-R3Iw-nC0wY7-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
