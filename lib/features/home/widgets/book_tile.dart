@@ -1,5 +1,6 @@
 import 'package:cubit_test/repositories/models/trade_order.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BookTile extends StatelessWidget {
   const BookTile({super.key, required this.tradeOrder});
@@ -33,9 +34,13 @@ class BookTile extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(tradeOrder.giving.name,
                           maxLines: 1,
-                          style: const TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              fontWeight: FontWeight.w600)),
+                          // style: const TextStyle(
+                          //     overflow: TextOverflow.ellipsis,
+                          //     fontWeight: FontWeight.w600)),
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w600,
+                              textStyle:
+                                  TextStyle(overflow: TextOverflow.ellipsis)))
                     ],
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cubit_test/features/home/widgets/book_item.dart';
 import 'package:cubit_test/features/home/widgets/book_tile.dart';
+import 'package:cubit_test/features/home/widgets/book_tile_new.dart';
 import 'package:cubit_test/features/home/widgets/search_field.dart';
 import 'package:cubit_test/repositories/models/book.dart';
 import 'package:cubit_test/repositories/models/trade_order.dart';
@@ -15,7 +16,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       drawer: Drawer(),
       appBar: AppBar(
-        title: Text("BookXchange", style: theme.textTheme.displayLarge),
+        title: Text("BookXchange", style: theme.textTheme.displayMedium),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8),
@@ -36,25 +37,28 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(child: SearchField()),
-              SizedBox(width: 12),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.filter_list_sharp, size: 30),
-              )
-            ],
-          ),
-          SizedBox(height: 16),
-          Expanded(
-              // child: BookGridWidget(),
-              child: _buildListBody())
-        ],
+    return Container(
+      color: Colors.grey[300],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(child: SearchField()),
+                SizedBox(width: 12),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.filter_list_sharp, size: 30),
+                )
+              ],
+            ),
+            SizedBox(height: 16),
+            Expanded(
+                // child: BookGridWidget(),
+                child: _buildListBody())
+          ],
+        ),
       ),
     );
   }
@@ -83,8 +87,8 @@ class HomeScreen extends StatelessWidget {
                   children: snapshot.data!.docs.map((docsnap) {
                     Map<String, dynamic> data =
                         docsnap.data()! as Map<String, dynamic>;
-                    return BookTile(
-                        tradeOrder: TradeOrder(
+                    return BookTileNew(
+                        order: TradeOrder(
                       date: data['date'],
                       id: "1",
                       giving: Book(

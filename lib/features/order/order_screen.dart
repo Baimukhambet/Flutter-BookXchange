@@ -15,23 +15,30 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Create Order")),
+      appBar: AppBar(
+        title: Text("Создать Пост", style: theme.textTheme.titleLarge),
+        backgroundColor: Colors.white,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+      ),
       body: BlocBuilder<OrderBloc, OrderState>(
         bloc: bloc,
         builder: (context, state) {
-          if (state is OrderInitial) {
-            return _buildUI(context, bloc);
-          } else if (state is OrderSuccess) {
-            return Center(
-              child: Text("Order has been created!"),
-            );
-          } else if (state is OrderFailed) {
-            return Center(
-              child: Text("Order Failed!"),
-            );
-          }
-          return Center(child: CircularProgressIndicator());
+          // if (state is OrderInitial) {
+          //   return _buildUI(context, bloc);
+          // } else if (state is OrderSuccess) {
+          //   return Center(
+          //     child: Text("Order has been created!"),
+          //   );
+          // } else if (state is OrderFailed) {
+          //   return Center(
+          //     child: Text("Order Failed!"),
+          //   );
+          // }
+          // return Center(child: CircularProgressIndicator());
+          return _buildUI(context, bloc);
         },
       ),
     );
@@ -44,29 +51,64 @@ class OrderScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Я хочу получить", style: theme.textTheme.displayLarge),
+          16.height,
+          Row(
+            children: [
+              Expanded(
+                child: InputField(
+                    hide: false,
+                    hintText: "Название книги",
+                    controller: _getBookController),
+              ),
+              TextButton(
+                child: Text("Найти"),
+                onPressed: () {
+                  bloc.add(
+                      OrderFindBookTapped(bookName: _getBookController.text));
+                },
+              )
+            ],
+          ),
           24.height,
-          InputField(
-              hide: false,
-              hintText: "Введите название книги",
-              controller: _getBookController),
-          24.height,
-          Text("Взамен я отдам", style: theme.textTheme.displayLarge),
-          24.height,
-          InputField(
-              hide: false,
-              hintText: "Введите название книги",
-              controller: _giveBookController),
-          24.height,
-          SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                  onPressed: () {
-                    bloc.add(OrderCreateTapped(
-                        getBookName: _getBookController.text,
-                        giveBookName: _giveBookController.text));
-                  },
-                  child: Text("Подтвердить")))
+          BlocBuilder<OrderBloc, OrderState>(
+            bloc: bloc,
+            builder: (context, state) {
+              if (state is OrderBooksLoaded) {
+                return Flexible(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: ListView(
+                      // shrinkWrap: true,
+                      children: [
+                        ...state.books.map((e) => ListTile(
+                              contentPadding: EdgeInsets.all(8),
+                              title: Text(e.name),
+                              leading: e.imageUrl != ''
+                                  ? Image.network(
+                                      e.imageUrl,
+                                    )
+                                  : Container(
+                                      color: Colors.grey,
+                                      height: 40,
+                                      width: 40),
+                            ))
+                      ],
+                    ),
+                  ),
+                );
+              } else if (state is OrderBooksFailure) {
+                return Center(
+                  child: Text(state.message ?? "no message but error"),
+                );
+              } else if (state is OrderInitial) {
+                return SizedBox();
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          )
         ],
       ),
     );

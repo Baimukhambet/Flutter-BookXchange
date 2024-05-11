@@ -6,6 +6,7 @@ import 'package:cubit_test/theme/theme.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -33,6 +34,15 @@ class MyApp extends StatelessWidget {
           routerConfig: router,
           theme: theme,
           debugShowCheckedModeBanner: false,
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            Locale('en'), // English
+            Locale('ru'), // Spanish
+          ],
         );
       },
     );

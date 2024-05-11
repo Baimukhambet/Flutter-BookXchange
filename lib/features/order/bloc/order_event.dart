@@ -9,3 +9,11 @@ final class OrderCreateTapped extends OrderEvent {
 
   OrderCreateTapped({required this.getBookName, required this.giveBookName});
 }
+
+final class OrderFindBookTapped extends OrderEvent {
+  final String bookName;
+
+  OrderFindBookTapped({required this.bookName});
+}
+
+final class OrderFoundBookTapped extends OrderEvent {}
