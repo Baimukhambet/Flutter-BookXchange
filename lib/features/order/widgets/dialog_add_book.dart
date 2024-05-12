@@ -19,9 +19,15 @@ class _DialogAddBookState extends State<DialogAddBook> {
   GoogleLibraryRepository googleLib = GoogleLibraryRepository.shared;
 
   void _findBooks() async {
+    books = [];
+    setState(() {
+      isLoading = true;
+    });
     books = await googleLib.findBooks(widget.controller.text);
     debugPrint(books.toString());
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _onStopTyping() {
@@ -38,6 +44,7 @@ class _DialogAddBookState extends State<DialogAddBook> {
   }
 
   Timer? searchOnStoppedTyping;
+  bool isLoading = false;
 
   // String query = Publish;
 
@@ -64,6 +71,8 @@ class _DialogAddBookState extends State<DialogAddBook> {
             //   child: Text("Find"),
             //   onPressed: () => _findBooks(),
             // ),
+            if (isLoading)
+              Expanded(child: Center(child: CircularProgressIndicator())),
             Flexible(
               child: ListView(
                 // shrinkWrap: true,

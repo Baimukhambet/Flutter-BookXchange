@@ -38,19 +38,27 @@ class OrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("Создать Пост", style: theme.textTheme.titleLarge),
-        backgroundColor: Colors.white,
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-      ),
-      body: BlocBuilder<OrderBloc, OrderState>(
-        bloc: bloc,
-        builder: (context, state) {
-          return _buildUI(context, bloc);
-        },
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text("Создать Пост", style: theme.textTheme.titleLarge),
+          backgroundColor: Colors.white,
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+        ),
+        body: BlocBuilder<OrderBloc, OrderState>(
+          bloc: bloc,
+          builder: (context, state) {
+            return _buildUI(context, bloc);
+          },
+        ),
       ),
     );
   }
@@ -68,6 +76,7 @@ class OrderScreen extends StatelessWidget {
     ).then((value) {
       debugPrint("Dismissed");
       if (value is Book) {
+        FocusScope.of(context).unfocus();
         debugPrint("You chose" + value.name);
         _getBookController.clear();
         bloc.add(OrderGetBookChosen(book: value));
@@ -91,7 +100,7 @@ class OrderScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //INPUT FIELD
-                      if (!(state is OrderForm && state.giving != null))
+                      if (state.giving == null)
                         Row(
                           children: [
                             Expanded(
@@ -106,21 +115,23 @@ class OrderScreen extends StatelessWidget {
                         ),
                       24.height,
 
-                      //BOOK LIST
-                      if (state is OrderBooksLoaded)
+                      // List found books
+                      if (state.giving == null && state.found_books.isNotEmpty)
                         Flexible(
                           child: SizedBox(
                             height: MediaQuery.of(context).size.height * 0.4,
                             child: ListView(
                               // shrinkWrap: true,
                               children: [
-                                ...state.books.map((e) => ListTile(
-                                      onTap: () => bloc.add(
-                                          OrderFoundBookTapped(
-                                              book: Book(
-                                                  category: Category.all,
-                                                  name: e.name,
-                                                  imageUrl: e.imageUrl))),
+                                ...state.found_books.map((e) => ListTile(
+                                      onTap: () {
+                                        _giveBookController.clear();
+                                        bloc.add(OrderFoundBookTapped(
+                                            book: Book(
+                                                category: Category.all,
+                                                name: e.name,
+                                                imageUrl: e.imageUrl)));
+                                      },
                                       contentPadding: const EdgeInsets.all(8),
                                       title: Text(e.name),
                                       leading: e.imageUrl != ''
@@ -136,77 +147,74 @@ class OrderScreen extends StatelessWidget {
                             ),
                           ),
                         )
-
-                      //ERROR MESSAGE
-                      else if (state is OrderBooksFailure)
-                        Center(
-                          child: Text(state.message ?? "no message but error"),
-                        )
-                      else if (state is OrderForm)
-                        if (state.giving != null)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(state.giving!.imageUrl,
-                                        fit: BoxFit.cover),
-                                  ),
-                                  18.width,
-                                  Flexible(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          state.giving!.name,
-                                          style: theme.textTheme.displayLarge,
-                                          maxLines: 10,
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              24.height,
-                              GestureDetector(
-                                onTap: () => bloc.add(OrderCancelBookTapped()),
-                                child: Text("Отменить выбор",
-                                    style: GoogleFonts.montserrat(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF5158FF))),
-                              )
-                            ],
-                          )
-                        else
-                          Expanded(
-                            child: Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 20),
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Center(
-                                    child: Text(
-                                  "Книга не выбрана",
-                                  style: GoogleFonts.montserrat(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                  textAlign: TextAlign.center,
-                                ))),
-                          )
-
-                      //BOOK NOT CHOSEN
-                      // if (!(state is OrderForm && state.giving != null))
-                      else
+                      else if (state.isLoading)
                         const Expanded(
                           child: Center(
                             child: CircularProgressIndicator(),
                           ),
                         )
+
+                      //ERROR MESSAGE
+                      else if (state.hasError)
+                        Center(
+                          child: Text(
+                              state.errorMessage ?? "no message but error"),
+                        )
+
+                      //Chosen
+                      else if (state.giving != null)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(state.giving!.imageUrl,
+                                      fit: BoxFit.cover),
+                                ),
+                                18.width,
+                                Flexible(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        state.giving!.name,
+                                        style: theme.textTheme.displayLarge,
+                                        maxLines: 10,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                            24.height,
+                            GestureDetector(
+                              onTap: () => bloc.add(OrderCancelBookTapped()),
+                              child: Text("Отменить выбор",
+                                  style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF5158FF))),
+                            )
+                          ],
+                        )
+                      else
+                        Expanded(
+                          child: Container(
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              margin: const EdgeInsets.symmetric(vertical: 20),
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Center(
+                                  child: Text(
+                                "Книга не выбрана",
+                                style: GoogleFonts.montserrat(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
+                                textAlign: TextAlign.center,
+                              ))),
+                        ),
                     ],
                   );
                 },
@@ -226,14 +234,13 @@ class OrderScreen extends StatelessWidget {
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (state is OrderForm)
-                              ...state.taking.map(
-                                (e) {
-                                  return Flexible(child: GetBookItem(book: e));
-                                },
-                              ),
-                            if (!(state is OrderForm &&
-                                state.taking.length == 3))
+                            // if (state.taking.isNotEmpty)
+                            ...state.taking.map(
+                              (e) {
+                                return Flexible(child: GetBookItem(book: e));
+                              },
+                            ),
+                            if (state.taking.length < 3)
                               AddBookButton(
                                 onTap: () {
                                   _showAddBookDialog(context);

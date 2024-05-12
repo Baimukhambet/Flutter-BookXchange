@@ -16,63 +16,51 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final GoogleLibraryRepository libraryRepository =
       GoogleLibraryRepository.shared;
 
-  OrderBloc() : super(OrderForm()) {
-    on<OrderCreateTapped>(_createTapped);
+  OrderBloc() : super(OrderState()) {
+    // on<OrderCreateTapped>(_createTapped);
     on<OrderFindBookTapped>(_findBookTapped);
     on<OrderFoundBookTapped>(_foundBookTapped);
     on<OrderCancelBookTapped>(_cancelBookTapped);
     on<OrderGetBookChosen>(_getBookChosen);
   }
 
-  Future<void> _createTapped(OrderCreateTapped event, Emitter emit) async {
-    emit(OrderLoading());
-    try {
-      await bookService.addOrder(event.getBookName, event.giveBookName);
-      emit(OrderSuccess());
-    } catch (e) {
-      emit(OrderFailed());
-    }
-  }
+  // Future<void> _createTapped(OrderCreateTapped event, Emitter emit) async {
+  //   emit(OrderLoading());
+  //   try {
+  //     await bookService.addOrder(event.getBookName, event.giveBookName);
+  //     emit(OrderSuccess());
+  //   } catch (e) {
+  //     emit(OrderFailed());
+  //   }
+  // }
 
   void _findBookTapped(OrderFindBookTapped event, Emitter emit) async {
-    emit(OrderBooksLoading());
+    emit(state.copyWith(isLoading: true));
     if (event.bookName.isEmpty) {
-      emit(OrderBooksFailure('Ничего не найдено'));
+      emit(state.copyWith());
       return;
     }
     try {
-      final books = await libraryRepository.findBooks(event.bookName);
-      emit(OrderBooksLoaded(books: books));
+      final foundBooks = await libraryRepository.findBooks(event.bookName);
+      emit(state.copyWith(found_books: foundBooks));
     } catch (e) {
-      emit(OrderBooksFailure(e.toString()));
+      emit(state.copyWith(hasError: true, errorMessage: e.toString()));
     }
   }
 
   void _foundBookTapped(OrderFoundBookTapped event, Emitter emit) {
-    emit(OrderForm(event.book));
+    emit(state.copyWith(giving: event.book));
   }
 
   void _cancelBookTapped(OrderCancelBookTapped event, Emitter emit) {
-    emit(OrderInitial());
+    emit(state.copyWith(giving: null));
   }
 
   void _getBookChosen(OrderGetBookChosen event, Emitter emit) {
     if (event.book != null) {
-      debugPrint("We did it!");
-      if (state is OrderForm) {
-        final oldState = state as OrderForm;
-        OrderForm newState = OrderForm(oldState.giving);
-        newState.taking = oldState.taking;
-        newState.taking.add(event.book!);
-
-        debugPrint((state == newState).toString());
-        emit(newState);
-        return;
-      }
-      final newForm = OrderForm();
-      newForm.taking.add(event.book!);
-      debugPrint(newForm.taking.toString());
-      emit(newForm);
+      List<Book> taking = [...state.taking];
+      taking.add(event.book!);
+      emit(state.copyWith(taking: taking, giving: state.giving));
     }
   }
 }
