@@ -19,11 +19,19 @@ final class OrderBooksLoaded extends OrderState {
   OrderBooksLoaded({required this.books});
 }
 
-final class OrderForm extends OrderState {
+final class OrderForm extends OrderState implements Equatable {
   Book? giving;
-  List<Book>? taking;
+  List<Book> taking = [];
 
-  OrderForm([this.giving, this.taking]);
+  OrderForm([this.giving]);
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [giving, taking];
+
+  @override
+  // TODO: implement stringify
+  bool? get stringify => throw UnimplementedError();
 }
 
 final class OrderBooksFailure extends OrderState {

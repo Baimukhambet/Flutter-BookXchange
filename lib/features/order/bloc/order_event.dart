@@ -21,3 +21,10 @@ final class OrderFoundBookTapped extends OrderEvent {
 
   OrderFoundBookTapped({required this.book});
 }
+
+final class OrderGetBookChosen extends OrderEvent {
+  Book? book;
+  OrderGetBookChosen({this.book});
+}
+
+final class OrderCancelBookTapped extends OrderEvent {}

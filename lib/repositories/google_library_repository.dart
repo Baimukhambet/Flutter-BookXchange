@@ -16,11 +16,11 @@ class GoogleLibraryRepository {
     final docs = data['items'] as List<dynamic>;
     final List<Book> books = [];
     final int size = min(10, docs.length);
-    debugPrint(docs.length.toString());
+    // debugPrint(docs.length.toString());
     for (var i = 0; i < size; i++) {
       final doc = docs[i] as Map<String, dynamic>;
       final volumeInfo = doc['volumeInfo'] as Map<String, dynamic>;
-      debugPrint(volumeInfo.toString());
+      // debugPrint(volumeInfo.toString());
       final title = volumeInfo['title'];
       if (!volumeInfo.containsKey('imageLinks')) {
         continue;
@@ -28,7 +28,7 @@ class GoogleLibraryRepository {
       final imageUrl = volumeInfo.containsKey('imageLinks')
           ? (volumeInfo['imageLinks'] as Map<String, dynamic>)['thumbnail']
           : '';
-      debugPrint(imageUrl);
+      // debugPrint(imageUrl);
       books.add(Book(category: Category.all, name: title, imageUrl: imageUrl));
     }
 
