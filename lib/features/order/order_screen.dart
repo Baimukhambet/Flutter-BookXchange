@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cubit_test/extension.dart';
 import 'package:cubit_test/features/auth/widgets/input_field.dart';
 import 'package:cubit_test/features/order/bloc/order_bloc.dart';
+import 'package:cubit_test/repositories/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +18,7 @@ class OrderScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Создать Пост", style: theme.textTheme.titleLarge),
         backgroundColor: Colors.white,
@@ -81,6 +83,11 @@ class OrderScreen extends StatelessWidget {
                       // shrinkWrap: true,
                       children: [
                         ...state.books.map((e) => ListTile(
+                              onTap: () => bloc.add(OrderFoundBookTapped(
+                                  book: Book(
+                                      category: Category.all,
+                                      name: e.name,
+                                      imageUrl: e.imageUrl))),
                               contentPadding: EdgeInsets.all(8),
                               title: Text(e.name),
                               leading: e.imageUrl != ''
@@ -100,17 +107,70 @@ class OrderScreen extends StatelessWidget {
                 return Center(
                   child: Text(state.message ?? "no message but error"),
                 );
-              } else if (state is OrderInitial) {
+              } else if (state is OrderForm) {
+                if (state.giving != null) {
+                  return Image.network(state.giving!.imageUrl,
+                      width: 100, height: 120, fit: BoxFit.cover);
+                }
                 return SizedBox();
+              } else if (state is OrderInitial) {
+                return Container(
+                    color: Colors.grey[300],
+                    height: 120,
+                    width: 100,
+                    child: Center(
+                        child: Text(
+                      "Книга не выбрана",
+                      textAlign: TextAlign.center,
+                    )));
               } else {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
             },
-          )
+          ),
+          24.height,
+          Text('Обменяю на', style: theme.textTheme.titleLarge),
+          24.height,
+          Row(
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add_circle_outline,
+                        size: 44, color: Colors.grey[600]),
+                    4.height,
+                    Text("добавить",
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[600])),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          24.height,
+          Container(height: 240, width: 600, color: Colors.grey[400]),
+          24.height,
+          ElevatedButton(
+              onPressed: () {},
+              child: Text("Создать"),
+              style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(50),
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white))
         ],
       ),
     );
   }
 }
+//гарри поттер и узник азкабана

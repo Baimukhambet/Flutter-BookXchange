@@ -17,6 +17,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   OrderBloc() : super(OrderInitial()) {
     on<OrderCreateTapped>(_createTapped);
     on<OrderFindBookTapped>(_findBookTapped);
+    on<OrderFoundBookTapped>(_foundBookTapped);
   }
 
   Future<void> _createTapped(OrderCreateTapped event, Emitter emit) async {
@@ -37,5 +38,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     } catch (e) {
       emit(OrderBooksFailure(e.toString()));
     }
+  }
+
+  void _foundBookTapped(OrderFoundBookTapped event, Emitter emit) {
+    emit(OrderForm(event.book));
   }
 }

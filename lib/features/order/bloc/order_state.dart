@@ -19,6 +19,13 @@ final class OrderBooksLoaded extends OrderState {
   OrderBooksLoaded({required this.books});
 }
 
+final class OrderForm extends OrderState {
+  Book? giving;
+  List<Book>? taking;
+
+  OrderForm([this.giving, this.taking]);
+}
+
 final class OrderBooksFailure extends OrderState {
   String? message;
   OrderBooksFailure([this.message]);
