@@ -215,49 +215,46 @@ class OrderScreen extends StatelessWidget {
             24.height,
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Обменяю на', style: theme.textTheme.titleLarge),
-                      24.height,
-                      BlocBuilder<OrderBloc, OrderState>(
-                        bloc: bloc,
-                        builder: (context, state) {
-                          return Row(
-                            children: [
-                              if (state is OrderForm)
-                                ...state.taking.map(
-                                  (e) {
-                                    return Flexible(
-                                        child: GetBookItem(book: e));
-                                  },
-                                ),
-                              if (!(state is OrderForm &&
-                                  state.taking.length == 3))
-                                AddBookButton(
-                                  onTap: () {
-                                    _showAddBookDialog(context);
-                                  },
-                                ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                  Text('Обменяю на', style: theme.textTheme.titleLarge),
                   24.height,
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(50),
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white),
-                      child: const Text("Создать")),
+                  Expanded(
+                    child: BlocBuilder<OrderBloc, OrderState>(
+                      bloc: bloc,
+                      builder: (context, state) {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (state is OrderForm)
+                              ...state.taking.map(
+                                (e) {
+                                  return Flexible(child: GetBookItem(book: e));
+                                },
+                              ),
+                            if (!(state is OrderForm &&
+                                state.taking.length == 3))
+                              AddBookButton(
+                                onTap: () {
+                                  _showAddBookDialog(context);
+                                },
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
-            )
+            ),
+            ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white),
+                child: const Text("Создать")),
+            14.height
           ],
         ),
       ),

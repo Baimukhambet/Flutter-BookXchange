@@ -10,18 +10,19 @@ class GetBookItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 140,
-        width: 100,
-        margin: EdgeInsets.only(right: 14),
+        // height: 4000,
+        // width: 100,
+        margin: EdgeInsets.only(right: 18),
         child: Column(
           children: [
-            Flexible(
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    book.imageUrl,
-                  )),
-            ),
+            ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  book.imageUrl,
+                  height: 140,
+                  // width: 100,
+                  fit: BoxFit.fill,
+                )),
             Text(book.name, style: TextStyle(overflow: TextOverflow.ellipsis))
           ],
         ));
