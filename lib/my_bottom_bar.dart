@@ -1,4 +1,5 @@
 import 'package:cubit_test/features/home/home_screen.dart';
+import 'package:cubit_test/features/order_create/bloc/order_bloc.dart';
 import 'package:cubit_test/features/profile/profile_screen.dart';
 import 'package:cubit_test/repositories/providers/tab_manager.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class MyBottomBar extends StatelessWidget {
             foregroundColor: Colors.white,
             shape: CircleBorder(),
             onPressed: () {
+              context.read<OrderBloc>().add(OrderReset());
               context.push('/order');
             },
             child: const Icon(Icons.add),

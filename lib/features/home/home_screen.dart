@@ -6,6 +6,7 @@ import 'package:cubit_test/features/home/widgets/search_field.dart';
 import 'package:cubit_test/repositories/models/book.dart';
 import 'package:cubit_test/repositories/models/trade_order.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -88,18 +89,31 @@ class HomeScreen extends StatelessWidget {
                     Map<String, dynamic> data =
                         docsnap.data()! as Map<String, dynamic>;
                     return BookTileNew(
+                        onTap: () => context.pushNamed('/post',
+                            extra: TradeOrder(
+                              date: data['date'],
+                              id: "1",
+                              giving: Book(
+                                  name: data['giving'],
+                                  imageUrl: data['givingImageUrl']),
+                              taking: (data['taking'] as List<dynamic>)
+                                  .map((book) => Book(
+                                      name: book['title'],
+                                      imageUrl: book['imageUrl']))
+                                  .toList(),
+                            )),
                         order: TradeOrder(
-                      date: data['date'],
-                      id: "1",
-                      giving: Book(
-                          name: data['giving'],
-                          imageUrl:
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Open_book_nae_02.svg/800px-Open_book_nae_02.svg.png'),
-                      taking: (data['taking'] as List<dynamic>)
-                          .map((book) => Book(
-                              name: book['title'], imageUrl: book['imageUrl']))
-                          .toList(),
-                    ));
+                          date: data['date'],
+                          id: "1",
+                          giving: Book(
+                              name: data['giving'],
+                              imageUrl: data['givingImageUrl']),
+                          taking: (data['taking'] as List<dynamic>)
+                              .map((book) => Book(
+                                  name: book['title'],
+                                  imageUrl: book['imageUrl']))
+                              .toList(),
+                        ));
                   }).toList(),
                 ),
               ));

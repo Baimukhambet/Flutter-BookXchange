@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cubit_test/extension.dart';
 import 'package:cubit_test/features/auth/widgets/input_field.dart';
-import 'package:cubit_test/features/order/bloc/order_bloc.dart';
-import 'package:cubit_test/features/order/widgets/add_book_button.dart';
-import 'package:cubit_test/features/order/widgets/dialog_add_book.dart';
-import 'package:cubit_test/features/order/widgets/get_book_item.dart';
+import 'package:cubit_test/features/order_create/bloc/order_bloc.dart';
+import 'package:cubit_test/features/order_create/widgets/add_book_button.dart';
+import 'package:cubit_test/features/order_create/widgets/dialog_add_book.dart';
+import 'package:cubit_test/features/order_create/widgets/get_book_item.dart';
 import 'package:cubit_test/repositories/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -101,9 +101,8 @@ class OrderScreen extends StatelessWidget {
                         children: [
                           const Text("Пост успешно создан!"),
                           TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 context.pop();
-                                context.read<OrderBloc>().add(OrderReset());
                               },
                               child: const Text("Назад"))
                         ],
