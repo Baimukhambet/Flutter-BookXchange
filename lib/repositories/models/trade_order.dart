@@ -4,7 +4,7 @@ import 'package:cubit_test/repositories/models/book.dart';
 class TradeOrder {
   final String id;
   final Book giving;
-  final Book taking;
+  final List<Book> taking;
   final String date;
 
   String get timePassed {

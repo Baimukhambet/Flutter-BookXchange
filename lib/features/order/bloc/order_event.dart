@@ -3,12 +3,7 @@ part of 'order_bloc.dart';
 @immutable
 sealed class OrderEvent {}
 
-final class OrderCreateTapped extends OrderEvent {
-  final String getBookName;
-  final String giveBookName;
-
-  OrderCreateTapped({required this.getBookName, required this.giveBookName});
-}
+final class OrderCreateTapped extends OrderEvent {}
 
 final class OrderFindBookTapped extends OrderEvent {
   final String bookName;
@@ -28,3 +23,5 @@ final class OrderGetBookChosen extends OrderEvent {
 }
 
 final class OrderCancelBookTapped extends OrderEvent {}
+
+final class OrderReset extends OrderEvent {}

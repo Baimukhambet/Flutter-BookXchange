@@ -1,9 +1,15 @@
 class Book {
   final String name;
-  final Category category;
+  // final Category category;
   final String imageUrl;
 
-  Book({required this.name, required this.category, required this.imageUrl});
+  Book({required this.name, required this.imageUrl});
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return 'Book: $name';
+  }
 }
 
 enum Category {

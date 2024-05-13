@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cubit_test/features/auth/providers/auth_manager.dart';
+import 'package:cubit_test/features/order/bloc/order_bloc.dart';
 import 'package:cubit_test/firebase_options.dart';
 import 'package:cubit_test/repositories/providers/tab_manager.dart';
 import 'package:cubit_test/router/router.dart';
@@ -6,6 +8,7 @@ import 'package:cubit_test/theme/theme.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -30,19 +33,26 @@ class MyApp extends StatelessWidget {
         ),
       ],
       builder: (context, child) {
-        return MaterialApp.router(
-          routerConfig: router,
-          theme: theme,
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => OrderBloc(),
+            )
           ],
-          supportedLocales: [
-            Locale('en'), // English
-            Locale('ru'), // Spanish
-          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: theme,
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: [
+              Locale('en'), // English
+              Locale('ru'), // Spanish
+            ],
+          ),
         );
       },
     );

@@ -48,10 +48,10 @@ class BookTile extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      Image.network(tradeOrder.taking.imageUrl,
+                      Image.network(tradeOrder.giving.imageUrl,
                           height: 100, width: 80, fit: BoxFit.contain),
                       const SizedBox(height: 8),
-                      Text(tradeOrder.taking.name,
+                      Text(tradeOrder.giving.name,
                           maxLines: 1,
                           style: const TextStyle(
                               overflow: TextOverflow.ellipsis,

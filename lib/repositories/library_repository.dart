@@ -21,7 +21,7 @@ class LibraryRepository {
       final firstDoc = docs[i] as Map<String, dynamic>;
       final title = firstDoc['title'] as String;
       final imageUrl = (firstDoc['cover_i'] as int?).toString();
-      books.add(Book(category: Category.all, name: title, imageUrl: imageUrl));
+      books.add(Book(name: title, imageUrl: imageUrl));
     }
 
     return books;

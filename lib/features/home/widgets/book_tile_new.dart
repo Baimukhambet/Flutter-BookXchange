@@ -36,32 +36,12 @@ class BookTileNew extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: ClipRRect(
+                    ...order.taking.map(
+                      (e) => ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                            'https://m.media-amazon.com/images/I/611X8GI7hpL._AC_UF1000,1000_QL80_.jpg',
-                            fit: BoxFit.fill),
+                        child: Image.network(e.imageUrl, fit: BoxFit.fill),
                       ),
-                    ),
-                    12.width,
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                            'https://m.media-amazon.com/images/I/81HntONlwgL._AC_UF1000,1000_QL80_DpWeblab_.jpg',
-                            fit: BoxFit.fill),
-                      ),
-                    ),
-                    12.width,
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                            'https://m.media-amazon.com/images/I/71rpa1-kyvL._AC_UF1000,1000_QL80_.jpg',
-                            fit: BoxFit.fill),
-                      ),
-                    ),
+                    )
                   ],
                 ))
           ],

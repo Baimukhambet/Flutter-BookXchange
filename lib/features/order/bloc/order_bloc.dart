@@ -17,22 +17,24 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       GoogleLibraryRepository.shared;
 
   OrderBloc() : super(OrderState()) {
-    // on<OrderCreateTapped>(_createTapped);
+    on<OrderCreateTapped>(_createTapped);
     on<OrderFindBookTapped>(_findBookTapped);
     on<OrderFoundBookTapped>(_foundBookTapped);
     on<OrderCancelBookTapped>(_cancelBookTapped);
     on<OrderGetBookChosen>(_getBookChosen);
+    on<OrderReset>(_orderReset);
   }
 
-  // Future<void> _createTapped(OrderCreateTapped event, Emitter emit) async {
-  //   emit(OrderLoading());
-  //   try {
-  //     await bookService.addOrder(event.getBookName, event.giveBookName);
-  //     emit(OrderSuccess());
-  //   } catch (e) {
-  //     emit(OrderFailed());
-  //   }
-  // }
+  Future<void> _createTapped(OrderCreateTapped event, Emitter emit) async {
+    emit(state.copyWith(isCreatingOrder: true, giving: state.giving));
+    try {
+      debugPrint(state.giving.toString() + '+' + state.taking.toString());
+      await bookService.addOrder(state.giving!, state.taking!);
+      emit(state.copyWith(orderIsCreated: true));
+    } catch (e) {
+      emit(state.copyWith(hasError: true, errorMessage: e.toString()));
+    }
+  }
 
   void _findBookTapped(OrderFindBookTapped event, Emitter emit) async {
     emit(state.copyWith(isLoading: true));
@@ -62,5 +64,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       taking.add(event.book!);
       emit(state.copyWith(taking: taking, giving: state.giving));
     }
+  }
+
+  void _orderReset(OrderReset event, Emitter emit) {
+    emit(OrderState());
   }
 }

@@ -7,6 +7,8 @@ class OrderState extends Equatable {
   final bool hasError;
   final String errorMessage;
   final bool isLoading;
+  final bool isCreatingOrder;
+  final bool orderIsCreated;
 
   OrderState({
     this.giving = null,
@@ -15,6 +17,8 @@ class OrderState extends Equatable {
     this.errorMessage = '',
     this.isLoading = false,
     this.found_books = const [],
+    this.isCreatingOrder = false,
+    this.orderIsCreated = false,
   });
 
   OrderState copyWith({
@@ -24,6 +28,8 @@ class OrderState extends Equatable {
     String errorMessage = '',
     bool isLoading = false,
     List<Book> found_books = const [],
+    isCreatingOrder = false,
+    orderIsCreated = false,
   }) {
     return OrderState(
         giving: giving,
@@ -31,10 +37,20 @@ class OrderState extends Equatable {
         found_books: found_books,
         hasError: hasError,
         errorMessage: errorMessage,
-        isLoading: isLoading);
+        isLoading: isLoading,
+        isCreatingOrder: isCreatingOrder,
+        orderIsCreated: orderIsCreated);
   }
 
   @override
   // TODO: implement props
-  List<Object?> get props => [giving, taking, found_books, isLoading, hasError];
+  List<Object?> get props => [
+        giving,
+        taking,
+        found_books,
+        isLoading,
+        hasError,
+        isCreatingOrder,
+        orderIsCreated
+      ];
 }

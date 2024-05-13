@@ -93,14 +93,12 @@ class HomeScreen extends StatelessWidget {
                       id: "1",
                       giving: Book(
                           name: data['giving'],
-                          category: Category.all,
                           imageUrl:
                               'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Open_book_nae_02.svg/800px-Open_book_nae_02.svg.png'),
-                      taking: Book(
-                          name: data['taking'],
-                          category: Category.all,
-                          imageUrl:
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Open_book_nae_02.svg/800px-Open_book_nae_02.svg.png'),
+                      taking: (data['taking'] as List<dynamic>)
+                          .map((book) => Book(
+                              name: book['title'], imageUrl: book['imageUrl']))
+                          .toList(),
                     ));
                   }).toList(),
                 ),
@@ -123,7 +121,6 @@ class BookGridWidget extends StatelessWidget {
       itemBuilder: (context, index) => BookItem(
           book: Book(
               name: "CheckName",
-              category: Category.all,
               imageUrl:
                   'https://m.media-amazon.com/images/I/81YkqyaFVEL._AC_UF1000,1000_QL80_DpWeblab_.jpg')),
     );

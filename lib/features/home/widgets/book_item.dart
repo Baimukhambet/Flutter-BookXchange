@@ -26,7 +26,6 @@ class BookItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(book.name, style: theme.textTheme.titleLarge),
-                Text(book.category.name),
               ],
             ),
             SizedBox(

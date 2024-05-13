@@ -11,6 +11,7 @@ import 'package:cubit_test/repositories/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OrderScreen extends StatelessWidget {
@@ -20,19 +21,20 @@ class OrderScreen extends StatelessWidget {
   final TextEditingController _getBookController = TextEditingController();
   final TextEditingController _giveBookController = TextEditingController();
 
-  final OrderBloc bloc = OrderBloc();
+  // final OrderBloc bloc = OrderBloc();
 
   bool bookIsChosen = false;
 
-  void _onInputChange() {
+  void _onInputChange(BuildContext context) {
     const duration = Duration(milliseconds: 800);
     if (_onStopTyping != null) {
       _onStopTyping?.cancel();
     }
     _onStopTyping = Timer(
         duration,
-        () =>
-            bloc.add(OrderFindBookTapped(bookName: _giveBookController.text)));
+        () => context
+            .read<OrderBloc>()
+            .add(OrderFindBookTapped(bookName: _giveBookController.text)));
   }
 
   @override
@@ -46,20 +48,14 @@ class OrderScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: Text("Создать Пост", style: theme.textTheme.titleLarge),
-          backgroundColor: Colors.white,
-          scrolledUnderElevation: 0,
-          centerTitle: true,
-        ),
-        body: BlocBuilder<OrderBloc, OrderState>(
-          bloc: bloc,
-          builder: (context, state) {
-            return _buildUI(context, bloc);
-          },
-        ),
-      ),
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            title: Text("Создать Пост", style: theme.textTheme.titleLarge),
+            backgroundColor: Colors.white,
+            scrolledUnderElevation: 0,
+            centerTitle: true,
+          ),
+          body: _buildUI(context)),
     );
   }
 
@@ -79,24 +75,44 @@ class OrderScreen extends StatelessWidget {
         FocusScope.of(context).unfocus();
         debugPrint("You chose" + value.name);
         _getBookController.clear();
-        bloc.add(OrderGetBookChosen(book: value));
+        context.read<OrderBloc>().add(OrderGetBookChosen(book: value));
       }
     });
   }
 
-  Widget _buildUI(BuildContext context, OrderBloc bloc) {
+  Widget _buildUI(BuildContext context) {
     final theme = Theme.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: BlocBuilder<OrderBloc, OrderState>(
-                bloc: bloc,
-                builder: (context, state) {
-                  return Column(
+        child: BlocBuilder<OrderBloc, OrderState>(
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (state.isCreatingOrder)
+                  const Expanded(
+                      child: Center(child: CircularProgressIndicator()))
+                else if (state.orderIsCreated)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Пост успешно создан!"),
+                          TextButton(
+                              onPressed: () {
+                                context.pop();
+                                context.read<OrderBloc>().add(OrderReset());
+                              },
+                              child: const Text("Назад"))
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                      child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //INPUT FIELD
@@ -108,7 +124,7 @@ class OrderScreen extends StatelessWidget {
                                 hide: false,
                                 hintText: "Название книги",
                                 controller: _giveBookController,
-                                onChanged: (value) => _onInputChange(),
+                                onChanged: (value) => _onInputChange(context),
                               ),
                             ),
                           ],
@@ -126,11 +142,11 @@ class OrderScreen extends StatelessWidget {
                                 ...state.found_books.map((e) => ListTile(
                                       onTap: () {
                                         _giveBookController.clear();
-                                        bloc.add(OrderFoundBookTapped(
-                                            book: Book(
-                                                category: Category.all,
-                                                name: e.name,
-                                                imageUrl: e.imageUrl)));
+                                        context.read<OrderBloc>().add(
+                                            OrderFoundBookTapped(
+                                                book: Book(
+                                                    name: e.name,
+                                                    imageUrl: e.imageUrl)));
                                       },
                                       contentPadding: const EdgeInsets.all(8),
                                       title: Text(e.name),
@@ -190,7 +206,9 @@ class OrderScreen extends StatelessWidget {
                             ),
                             24.height,
                             GestureDetector(
-                              onTap: () => bloc.add(OrderCancelBookTapped()),
+                              onTap: () => context
+                                  .read<OrderBloc>()
+                                  .add(OrderCancelBookTapped()),
                               child: Text("Отменить выбор",
                                   style: GoogleFonts.montserrat(
                                       fontSize: 12,
@@ -216,58 +234,71 @@ class OrderScreen extends StatelessWidget {
                               ))),
                         ),
                     ],
-                  );
-                },
-              ),
-            ),
-            24.height,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Обменяю на', style: theme.textTheme.titleLarge),
-                  24.height,
-                  Expanded(
-                    child: BlocBuilder<OrderBloc, OrderState>(
-                      bloc: bloc,
-                      builder: (context, state) {
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  )),
+                (!state.isCreatingOrder && !state.orderIsCreated)
+                    ? Expanded(
+                        child: Column(
                           children: [
-                            // if (state.taking.isNotEmpty)
-                            ...state.taking.map(
-                              (e) {
-                                return Flexible(child: GetBookItem(book: e));
-                              },
-                            ),
-                            if (state.taking.length < 3)
-                              AddBookButton(
-                                onTap: () {
-                                  _showAddBookDialog(context);
-                                },
+                            24.height,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Обменяю на',
+                                      style: theme.textTheme.titleLarge),
+                                  24.height,
+                                  Expanded(
+                                    child: BlocBuilder<OrderBloc, OrderState>(
+                                      builder: (context, state) {
+                                        return Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // if (state.taking.isNotEmpty)
+                                            ...state.taking.map(
+                                              (e) {
+                                                return Flexible(
+                                                    child:
+                                                        GetBookItem(book: e));
+                                              },
+                                            ),
+                                            if (state.taking.length < 3)
+                                              AddBookButton(
+                                                onTap: () {
+                                                  _showAddBookDialog(context);
+                                                },
+                                              ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  context
+                                      .read<OrderBloc>()
+                                      .add(OrderCreateTapped());
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(50),
+                                    backgroundColor: Colors.black,
+                                    foregroundColor: Colors.white),
+                                child: const Text("Создать")),
+                            14.height
                           ],
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white),
-                child: const Text("Создать")),
-            14.height
-          ],
+                        ),
+                      )
+                    : Container(height: 0, width: 0)
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
-
 
 //гарри поттер и узник азкабана

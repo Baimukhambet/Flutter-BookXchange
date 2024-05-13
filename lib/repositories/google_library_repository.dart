@@ -29,7 +29,7 @@ class GoogleLibraryRepository {
           ? (volumeInfo['imageLinks'] as Map<String, dynamic>)['thumbnail']
           : '';
       // debugPrint(imageUrl);
-      books.add(Book(category: Category.all, name: title, imageUrl: imageUrl));
+      books.add(Book(name: title, imageUrl: imageUrl));
     }
 
     return books;
