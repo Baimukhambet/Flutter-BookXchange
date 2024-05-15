@@ -22,6 +22,7 @@ class GoogleLibraryRepository {
       final volumeInfo = doc['volumeInfo'] as Map<String, dynamic>;
       // debugPrint(volumeInfo.toString());
       final title = volumeInfo['title'];
+      final author = (volumeInfo['authors'] as List<String>).first;
       if (!volumeInfo.containsKey('imageLinks')) {
         continue;
       }

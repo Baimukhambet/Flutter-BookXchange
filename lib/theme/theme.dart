@@ -11,8 +11,11 @@ final theme = ThemeData(
     appBarTheme: AppBarTheme(backgroundColor: Colors.white));
 
 final TextTheme textTheme = TextTheme(
-    displayLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    displayLarge:
+        GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold),
     displayMedium: GoogleFonts.montserrat(
         textStyle: TextStyle(), fontSize: 22, fontWeight: FontWeight.w600),
     titleLarge:
-        GoogleFonts.montserrat(fontSize: 24, fontWeight: FontWeight.bold));
+        GoogleFonts.montserrat(fontSize: 24, fontWeight: FontWeight.bold),
+    titleMedium:
+        GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.bold));

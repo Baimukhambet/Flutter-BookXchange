@@ -7,6 +7,7 @@ import 'package:cubit_test/features/order_create/bloc/order_bloc.dart';
 import 'package:cubit_test/features/order_create/widgets/add_book_button.dart';
 import 'package:cubit_test/features/order_create/widgets/dialog_add_book.dart';
 import 'package:cubit_test/features/order_create/widgets/get_book_item.dart';
+import 'package:cubit_test/features/post/widgets/main_button.dart';
 import 'package:cubit_test/repositories/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -275,17 +276,12 @@ class OrderScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            ElevatedButton(
-                                onPressed: () {
-                                  context
-                                      .read<OrderBloc>()
-                                      .add(OrderCreateTapped());
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    minimumSize: const Size.fromHeight(50),
-                                    backgroundColor: Colors.black,
-                                    foregroundColor: Colors.white),
-                                child: const Text("Создать")),
+                            MainButton(
+                              onTap: () => context
+                                  .read<OrderBloc>()
+                                  .add(OrderCreateTapped()),
+                              title: "Создать",
+                            ),
                             14.height
                           ],
                         ),
