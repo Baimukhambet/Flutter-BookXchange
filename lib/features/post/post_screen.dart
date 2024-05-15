@@ -1,9 +1,12 @@
 import 'package:cubit_test/extension.dart';
 import 'package:cubit_test/features/order_create/widgets/add_book_button.dart';
+import 'package:cubit_test/features/post/post_tab_provider.dart';
+import 'package:cubit_test/features/post/widgets/carousel_item.dart';
 import 'package:cubit_test/features/post/widgets/main_button.dart';
 import 'package:cubit_test/repositories/models/trade_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class PostScreen extends StatefulWidget {
   const PostScreen({Key? key, required this.order}) : super(key: key);
@@ -16,6 +19,7 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen> {
   final PageController _pageController = PageController();
+  final PostTabProvider postTabProvider = PostTabProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -63,23 +67,33 @@ class _PostScreenState extends State<PostScreen> {
             ),
             Expanded(
               child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Stack(children: [
                   PageView(
+                    onPageChanged: (value) => postTabProvider.change(value),
                     controller: _pageController,
                     scrollDirection: Axis.horizontal, // or Axis.vertical
                     children: [
-                      ...widget.order.taking
-                          .map((e) => Center(child: Text(e.name)))
+                      ...widget.order.taking.map((e) => CarouselItem(book: e))
                     ],
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: Text("LOW"),
+                    child: ChangeNotifierProvider(
+                      create: (context) => postTabProvider,
+                      builder: (context, child) => PageIndicator(
+                        pageCount: widget.order.taking.length,
+                      ),
+                    ),
                   )
                 ]),
               ),
             ),
-            MainButton(onTap: () {}, title: "Предложить обмен"),
+            14.height,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: MainButton(onTap: () {}, title: "Предложить обмен"),
+            ),
             16.height,
           ],
         ),
@@ -89,15 +103,23 @@ class _PostScreenState extends State<PostScreen> {
 }
 
 class PageIndicator extends StatelessWidget {
-  const PageIndicator({super.key, required this.pageCount});
+  PageIndicator({super.key, required this.pageCount});
 
   final int pageCount;
+  // final PostTabProvider postTabProvider;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Row(
-      children: [for (int i = 0; i < pageCount; i++) TabPageSelector()],
-    ));
+    return Consumer<PostTabProvider>(
+      builder: (context, provider, child) => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (int i = 0; i < pageCount; i++)
+            Icon((i == provider.currentIndex)
+                ? Icons.circle
+                : Icons.circle_outlined)
+        ],
+      ),
+    );
   }
 }
